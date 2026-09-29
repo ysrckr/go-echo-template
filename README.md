@@ -9,6 +9,7 @@ Production-shaped Go REST API template: **Echo v5**, **sqlx** (PostgreSQL/pgx), 
 | HTTP       | `github.com/labstack/echo/v5`| v5.4.0    |
 | Database   | `github.com/jmoiron/sqlx`    | v1.4.0    |
 | Driver     | `github.com/jackc/pgx/v5`    | v5.11.0   |
+| Migrations | `github.com/pressly/goose/v3`| v3.28.0   |
 | Secrets    | `github.com/infisical/go-sdk`| v0.8.0    |
 | Logging    | `github.com/rs/zerolog`      | v1.35.1   |
 | Config     | `github.com/caarlos0/env/v11`| v11.4.1   |
@@ -29,7 +30,7 @@ internal/server/    Echo instance, middleware, routes, error handler, validator
 internal/handler/   HTTP handlers
 internal/repository/data access
 internal/model/     domain types and request DTOs
-migrations/         SQL, auto-applied by the postgres container on first boot
+internal/migrate/   goose migrator + migrations/ embedded via go:embed
 ```
 
 ## Quick start
@@ -37,7 +38,7 @@ migrations/         SQL, auto-applied by the postgres container on first boot
 ```bash
 cp .env.example .env
 docker compose up -d postgres     # or point DB_* at your own instance
-make run
+make run                          # migrations apply automatically on boot
 ```
 
 ```bash
@@ -62,6 +63,37 @@ Everything in one shot: `make up` (api + postgres), `make logs`, `make down`.
 | DELETE | `/api/v1/users/:id`  | 204                                |
 
 Liveness is deliberately dependency-free so a slow database never causes a restart loop.
+
+## Migrations
+
+Migrations are plain SQL under `internal/migrate/migrations/`, compiled into the binary with `go:embed` and applied by [goose](https://github.com/pressly/goose). Nothing needs to be mounted, shipped alongside, or run from a CLI — the scratch image stays a single file, and the binary that serves traffic owns the schema.
+
+By default they run at startup, before the server accepts traffic (`DB_AUTO_MIGRATE=true`). goose takes a **Postgres advisory lock** first, so rolling deploys and multi-replica startups serialise: one replica applies, the others wait and then find nothing to do.
+
+```bash
+make migrate-new NAME=add_orders   # scaffold internal/migrate/migrations/00002_add_orders.sql
+make migrate-status
+make migrate-up
+make migrate-down                  # roll back one
+```
+
+Each file needs goose annotations, or it is silently skipped:
+
+```sql
+-- +goose Up
+CREATE TABLE orders (...);
+
+-- +goose Down
+DROP TABLE orders;
+```
+
+To migrate as a separate deploy step instead — a pre-deploy job, or a Kubernetes `initContainer` — set `DB_AUTO_MIGRATE=false` and run the one-shot admin mode, which exits without starting the server:
+
+```bash
+app -migrate up      # also: down | status | version
+```
+
+`TestEmbeddedMigrationsArePresent` guards the `go:embed` path, since a broken pattern would compile fine and just migrate nothing.
 
 ## Configuration
 
@@ -109,7 +141,7 @@ make docker-multi                 # linux/amd64 + linux/arm64, pushed
 
 Multi-platform builds pin the builder to `$BUILDPLATFORM` and cross-compile via `$TARGETOS`/`$TARGETARCH`, so building arm64 on an amd64 host (or the reverse) never runs the compiler under QEMU.
 
-Only three things are added to `scratch`: CA certificates (needed for Infisical and for `sslmode=require`), zoneinfo, and an `/etc/passwd` entry for the non-root user. Because the image has no `curl` or shell, the binary doubles as its own probe — `HEALTHCHECK` runs `/app -healthcheck`.
+Migrations travel inside the binary, so nothing extra is mounted. Only three things are added to `scratch`: CA certificates (needed for Infisical and for `sslmode=require`), zoneinfo, and an `/etc/passwd` entry for the non-root user. Because the image has no `curl` or shell, the binary doubles as its own probe — `HEALTHCHECK` runs `/app -healthcheck`.
 
 ## Echo v5 notes
 

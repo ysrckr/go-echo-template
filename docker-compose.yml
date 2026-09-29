@@ -18,6 +18,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-app}
       DB_SSLMODE: disable
+      # Migrations are embedded in the binary and applied at startup under an
+      # advisory lock. Set to false to run them as a separate deploy step.
+      DB_AUTO_MIGRATE: ${DB_AUTO_MIGRATE:-true}
 
       # Infisical runs through the Go SDK inside the app, so no extra container
       # or CLI is needed — only the machine identity credentials. Leave
@@ -44,8 +47,6 @@ services:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      # Applied once, on an empty data directory.
-      - ./migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-app}"]
       interval: 5s

@@ -59,6 +59,12 @@ type Database struct {
 	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME"  envDefault:"5m"`
 	ConnMaxIdleTime time.Duration `env:"DB_CONN_MAX_IDLE_TIME" envDefault:"5m"`
 	ConnectTimeout  time.Duration `env:"DB_CONNECT_TIMEOUT"    envDefault:"10s"`
+
+	// AutoMigrate applies pending migrations during startup, before the server
+	// accepts traffic. Turn it off to run migrations as a separate deploy step
+	// (`app -migrate up`).
+	AutoMigrate    bool          `env:"DB_AUTO_MIGRATE"   envDefault:"true"`
+	MigrateTimeout time.Duration `env:"DB_MIGRATE_TIMEOUT" envDefault:"60s"`
 }
 
 func (d Database) ConnString() string {

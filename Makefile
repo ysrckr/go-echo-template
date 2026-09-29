@@ -28,6 +28,26 @@ lint: ## Vet and format-check
 tidy: ## Tidy modules
 	go mod tidy
 
+.PHONY: migrate-up
+migrate-up: ## Apply pending migrations
+	go run ./cmd/api -migrate up
+
+.PHONY: migrate-down
+migrate-down: ## Roll back the last migration
+	go run ./cmd/api -migrate down
+
+.PHONY: migrate-status
+migrate-status: ## Show migration status
+	go run ./cmd/api -migrate status
+
+.PHONY: migrate-new
+migrate-new: ## Create a migration: make migrate-new NAME=add_orders
+	@test -n "$(NAME)" || (echo "usage: make migrate-new NAME=add_orders" && exit 1)
+	@next=$$(printf '%05d' $$(( $$(ls internal/migrate/migrations/*.sql 2>/dev/null | wc -l) + 1 ))); \
+	file=internal/migrate/migrations/$${next}_$(NAME).sql; \
+	printf -- '-- +goose Up\n\n\n-- +goose Down\n\n' > $$file; \
+	echo "created $$file"
+
 .PHONY: docker
 docker: ## Build the image for the local platform
 	docker build --build-arg VERSION=$(VERSION) -t $(IMAGE):$(VERSION) .

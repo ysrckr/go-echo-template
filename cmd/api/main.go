@@ -13,25 +13,27 @@ import (
 	"github.com/ysrckr/go-echo-template/internal/config"
 	"github.com/ysrckr/go-echo-template/internal/database"
 	"github.com/ysrckr/go-echo-template/internal/logger"
+	"github.com/ysrckr/go-echo-template/internal/migrate"
 	"github.com/ysrckr/go-echo-template/internal/secrets"
 	"github.com/ysrckr/go-echo-template/internal/server"
 )
 
 func main() {
 	healthcheck := flag.Bool("healthcheck", false, "probe the local readiness endpoint and exit (used as the container HEALTHCHECK)")
+	migrateCmd := flag.String("migrate", "", "run migrations and exit: up | down | status | version")
 	flag.Parse()
 
 	if *healthcheck {
 		os.Exit(probe())
 	}
 
-	if err := run(); err != nil {
+	if err := run(*migrateCmd); err != nil {
 		boot := logger.Bootstrap()
 		boot.Fatal().Err(err).Msg("application stopped")
 	}
 }
 
-func run() error {
+func run(migrateCmd string) error {
 	// One context for the whole process: SIGINT/SIGTERM cancels it, which in
 	// turn drives the HTTP server's graceful shutdown.
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -73,6 +75,33 @@ func run() error {
 			log.Info().Msg("database connection closed")
 		}
 	}()
+
+	migrator, err := migrate.New(db.SQL(), logger.Slog(log))
+	if err != nil {
+		return err
+	}
+
+	// `-migrate <cmd>` is a one-shot admin mode: run it and exit without
+	// starting the server. Useful as a pre-deploy job or a Kubernetes initContainer.
+	if migrateCmd != "" {
+		return runMigration(ctx, migrator, migrateCmd, cfg.Database.MigrateTimeout, log)
+	}
+
+	if cfg.Database.AutoMigrate {
+		migrateCtx, cancel := context.WithTimeout(ctx, cfg.Database.MigrateTimeout)
+		defer cancel()
+
+		// An advisory lock inside goose serialises this across replicas.
+		if err := migrator.Up(migrateCtx); err != nil {
+			return err
+		}
+
+		version, err := migrator.Version(migrateCtx)
+		if err != nil {
+			return err
+		}
+		log.Info().Int64("schema_version", version).Msg("migrations up to date")
+	}
 
 	srv := server.New(cfg, db, log)
 

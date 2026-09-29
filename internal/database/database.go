@@ -3,6 +3,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -45,6 +46,11 @@ func New(ctx context.Context, cfg config.Database, log zerolog.Logger) (*DB, err
 		Msg("database connected")
 
 	return &DB{DB: db}, nil
+}
+
+// SQL exposes the underlying *sql.DB, which is what goose expects.
+func (d *DB) SQL() *sql.DB {
+	return d.DB.DB
 }
 
 // Health reports whether the pool can still reach the database.
