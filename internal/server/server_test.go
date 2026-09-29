@@ -18,11 +18,13 @@ import (
 )
 
 // newTestServer builds a server without touching a real database: sqlx.Open is
-// lazy, so routes that do not query anything work fine.
+// lazy, so routes that do not query anything work fine. The DSN carries no
+// embedded credentials on purpose — a user:password@host form in a committed
+// file trips secret scanners even when the values are fake.
 func newTestServer(t *testing.T, port int) *server.Server {
 	t.Helper()
 
-	db, err := sqlx.Open("pgx", "postgres://invalid:invalid@127.0.0.1:1/none?sslmode=disable")
+	db, err := sqlx.Open("pgx", "postgres://127.0.0.1:1/nonexistent?sslmode=disable")
 	if err != nil {
 		t.Fatalf("open db: %v", err)
 	}
