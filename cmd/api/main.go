@@ -10,11 +10,11 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/yasar/go-echo-template/internal/config"
-	"github.com/yasar/go-echo-template/internal/database"
-	"github.com/yasar/go-echo-template/internal/logger"
-	"github.com/yasar/go-echo-template/internal/secrets"
-	"github.com/yasar/go-echo-template/internal/server"
+	"github.com/ysrckr/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/database"
+	"github.com/ysrckr/go-echo-template/internal/logger"
+	"github.com/ysrckr/go-echo-template/internal/secrets"
+	"github.com/ysrckr/go-echo-template/internal/server"
 )
 
 func main() {

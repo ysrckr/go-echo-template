@@ -11,7 +11,7 @@ import (
 	// Registers the "pgx" driver used below.
 	_ "github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/yasar/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/config"
 )
 
 // DB wraps *sqlx.DB so the rest of the app depends on our type, not the driver.

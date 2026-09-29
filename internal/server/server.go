@@ -12,11 +12,11 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/rs/zerolog"
 
-	"github.com/yasar/go-echo-template/internal/config"
-	"github.com/yasar/go-echo-template/internal/database"
-	"github.com/yasar/go-echo-template/internal/handler"
-	"github.com/yasar/go-echo-template/internal/logger"
-	"github.com/yasar/go-echo-template/internal/repository"
+	"github.com/ysrckr/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/database"
+	"github.com/ysrckr/go-echo-template/internal/handler"
+	"github.com/ysrckr/go-echo-template/internal/logger"
+	"github.com/ysrckr/go-echo-template/internal/repository"
 )
 
 type Server struct {

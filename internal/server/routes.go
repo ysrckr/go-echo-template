@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/labstack/echo/v5"
 
-	"github.com/yasar/go-echo-template/internal/handler"
+	"github.com/ysrckr/go-echo-template/internal/handler"
 )
 
 func registerRoutes(e *echo.Echo, health *handler.Health, users *handler.User) {

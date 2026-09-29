@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 
-	"github.com/yasar/go-echo-template/internal/model"
-	"github.com/yasar/go-echo-template/internal/repository"
+	"github.com/ysrckr/go-echo-template/internal/model"
+	"github.com/ysrckr/go-echo-template/internal/repository"
 )
 
 const (

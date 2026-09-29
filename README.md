@@ -134,5 +134,5 @@ make run | build | test | lint | tidy | docker | docker-multi | up | down | logs
 
 ```bash
 go mod edit -module github.com/you/your-service
-grep -rl 'github.com/yasar/go-echo-template' --include='*.go' . | xargs sed -i '' 's|github.com/yasar/go-echo-template|github.com/you/your-service|g'
+grep -rl 'github.com/ysrckr/go-echo-template' --include='*.go' . | xargs sed -i '' 's|github.com/ysrckr/go-echo-template|github.com/you/your-service|g'
 ```

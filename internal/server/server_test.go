@@ -12,9 +12,9 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 
-	"github.com/yasar/go-echo-template/internal/config"
-	"github.com/yasar/go-echo-template/internal/database"
-	"github.com/yasar/go-echo-template/internal/server"
+	"github.com/ysrckr/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/database"
+	"github.com/ysrckr/go-echo-template/internal/server"
 )
 
 // newTestServer builds a server without touching a real database: sqlx.Open is

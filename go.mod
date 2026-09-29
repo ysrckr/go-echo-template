@@ -1,4 +1,4 @@
-module github.com/yasar/go-echo-template
+module github.com/ysrckr/go-echo-template
 
 go 1.26.0
 

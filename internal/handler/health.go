@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"github.com/yasar/go-echo-template/internal/config"
-	"github.com/yasar/go-echo-template/internal/database"
+	"github.com/ysrckr/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/database"
 )
 
 type Health struct {

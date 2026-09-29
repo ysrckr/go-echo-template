@@ -9,7 +9,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/yasar/go-echo-template/internal/config"
+	"github.com/ysrckr/go-echo-template/internal/config"
 )
 
 // Bootstrap returns a minimal logger for the startup phase, before the full

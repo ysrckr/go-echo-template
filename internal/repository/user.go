@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yasar/go-echo-template/internal/database"
-	"github.com/yasar/go-echo-template/internal/model"
+	"github.com/ysrckr/go-echo-template/internal/database"
+	"github.com/ysrckr/go-echo-template/internal/model"
 )
 
 var (
