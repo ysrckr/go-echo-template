@@ -6,7 +6,7 @@
 #
 #   docker buildx build --platform linux/amd64,linux/arm64 -t app:latest --push .
 
-FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.27-alpine AS builder
 
 # Provided automatically by buildx.
 ARG TARGETOS

@@ -14,9 +14,9 @@ Production-shaped Go REST API template: **Echo v5**, **sqlx** (PostgreSQL/pgx), 
 | Logging    | `github.com/rs/zerolog`      | v1.35.1   |
 | Config     | `github.com/caarlos0/env/v11`| v11.4.1   |
 | Validation | `go-playground/validator/v10`| v10.30.5  |
-| Go         | toolchain                    | 1.26+     |
+| Go         | toolchain                    | 1.27+     |
 
-> Go 1.26 is required — `validator/v10.30.5` declares `go >= 1.26.0`, and Echo v5 needs ≥ 1.25.
+> Go 1.27 is required — `validator/v10.30.5` declares `go >= 1.26.0`, and Echo v5 needs ≥ 1.25.
 
 ## Layout
 
